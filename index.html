@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحقق من المنتج </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0d0d0d; }
+        .gold-gradient {
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+        }
+        .gold-text {
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 50%, #aa771c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* أنيميشن الدخول الناعم للنتيجة */
+        @keyframes resultFadeIn {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .result-animate {
+            animation: resultFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* مؤشر التحميل الذهبي الفخم */
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #bf953f;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen flex flex-col justify-between">
+
+    <header class="py-6 text-center border-b border-gray-800">
+        <h1 class="text-2xl font-bold tracking-widest gold-text">Arab Computers BRAND</h1>
+    </header>
+
+    <main class="max-w-4xl mx-auto my-10 px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        
+        <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800 backdrop-blur-sm">
+            <h2 class="text-xl font-bold mb-4 gold-text">خطوات التحقق من المنتج</h2>
+            <ul class="space-y-4 text-sm text-gray-400">
+                <li class="flex items-start gap-3">
+                    <span class="flex items-center justify-center bg-amber-500/10 text-amber-500 rounded-full h-6 w-6 shrink-0 border border-amber-500/30">1</span>
+                    <span>قم **بقشط الطبقة الفضية** الموجودة على علبة المنتج لتكشف عن الكود.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex items-center justify-center bg-amber-500/10 text-amber-500 rounded-full h-6 w-6 shrink-0 border border-amber-500/30">2</span>
+                    <span>يمكنك **مسح الـ QR** بالكاميرا مباشرة أو كتابة الكود يدوياً.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex items-center justify-center bg-amber-500/10 text-amber-500 rounded-full h-6 w-6 shrink-0 border border-amber-500/30">3</span>
+                    <span>اضغط على **"فحص المنتج"** وسيتم تأكيد الأصالة خلال لحظات.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-zinc-900 p-8 rounded-2xl border border-amber-500/20 shadow-2xl shadow-amber-500/5 text-center">
+            <h2 class="text-2xl font-bold mb-2">Product Authenticity Verification</h2>
+            <p class="text-gray-400 text-xs mb-6">امسح كود QR أو أدخل السيريال نمبر يدوياً</p>
+            
+            <div class="space-y-4">
+                <div class="relative flex items-center bg-zinc-950 border border-gray-700 rounded-xl focus-within:border-amber-500 transition-all overflow-hidden px-3">
+                    <button onclick="copyCode()" title="نسخ الكود" class="p-2 text-gray-400 hover:text-amber-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                    <input type="text" id="serialInput" placeholder="أدخل الكود أو امسح الـ QR..." 
+                        class="w-full bg-transparent py-3 text-center text-base uppercase tracking-widest text-white focus:outline-none">
+                    <button onclick="toggleScanner()" title="مسح QR Code" class="p-2 text-gray-400 hover:text-amber-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 17h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="scannerContainer" class="hidden border border-zinc-800 rounded-xl overflow-hidden bg-black p-2">
+                    <div id="reader" class="w-full"></div>
+                </div>
+                
+                <button onclick="checkProduct()" 
+                    class="w-full gold-gradient text-black font-bold py-3 rounded-xl hover:opacity-90 transition-all shadow-lg shadow-amber-500/20 text-lg tracking-wide">
+                    فـحـص الـمـنـتـج الآن
+                </button>
+            </div>
+
+            <div id="resultArea" class="mt-6 min-h-[60px] flex items-center justify-center">
+                <div id="checkingLoader" class="hidden flex flex-col items-center gap-2">
+                    <div class="loader"></div>
+                    <span class="text-xs text-gray-500 gold-text">جاري التحقق من قاعدة البيانات...</span>
+                </div>
+                <div id="resultBox" class="w-full p-4 rounded-xl hidden text-sm font-bold"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-900">
+        &copy; 2026 جميع الحقوق محفوظة .
+    </footer>
+
+    <script>
+        let validSerials = [];
+        let html5QrcodeScanner = null;
+
+        // دالة جلب وقراءة ملف السيريلات من الإكسيل التابع للموقع
+        async function loadExcelData() {
+            try {
+                const response = await fetch('products.xlsx');
+                const arrayBuffer = await response.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                validSerials = jsonData.map(row => String(row.Serial || row.serial || Object.values(row)[0]).trim().toUpperCase());
+                console.log("تم تحميل الأكواد بنجاح ومستعدة للفحص.");
+            } catch (error) {
+                console.error("خطأ أثناء محاولة قراءة ملف الإكسيل:", error);
+            }
+        }
+        window.onload = loadExcelData;
+
+        // ** دالة الفحص الأساسية المحسنة بالكامل لحل مشكلة ثبات الأنيميشن **
+        function checkProduct() {
+            const inputVal = document.getElementById('serialInput').value.trim().toUpperCase();
+            const resultBox = document.getElementById('resultBox');
+            const loader = document.getElementById('checkingLoader');
+            
+            // 1. إغلاق الـ Scanner فوراً في حال كان مفتوحاً لراحة المستخدم
+            stopScanner();
+
+            // 2. التحقق من الحقل الفارغ
+            if (!inputVal) {
+                showResult(resultBox, loader, "يرجى إدخال الكود أو قراءة الـ QR أولاً!", "bg-red-500/10 border border-red-500 text-red-400", false);
+                return;
+            }
+
+            // 3. كسر ثبات وحالة الأنيميشن القديم لضمان تفعيله مجدداً في كل ضغطة (Reset Animation)
+            resultBox.classList.add('hidden');
+            resultBox.classList.remove('result-animate');
+            resultBox.style.animation = 'none'; 
+            resultBox.offsetHeight; /* خطوة الـ Reflow السحرية لإجبار المتصفح على بدء الحركة مجدداً */
+            resultBox.style.animation = null; 
+
+            // إظهار مؤشر الفحص الفخم
+            loader.classList.remove('hidden');
+
+            // 4. تأخير زمني مستهدف (800ms) لإعطاء انطباع بالفحص الحقيقي والراقي
+            setTimeout(() => {
+                let message, classes;
+
+                if (validSerials.includes(inputVal)) {
+                    message = "✓ منتج أصلي ومضمون 100%. شكراً لثقتكم بمنتجاتنا الفاخرة.";
+                    classes = "bg-emerald-500/10 border border-emerald-500 text-emerald-400";
+                } else {
+                    message = "✕ تحذير! هذا الكود غير مسجل لدينا. قد يكون المنتج مقلداً.";
+                    classes = "bg-red-500/10 border border-red-500 text-red-400";
+                }
+
+                // 5. إرسال البيانات المحدثة وعرضها بالأنيميشن الجديد المتجدد
+                showResult(resultBox, loader, message, classes, true);
+
+            }, 800); 
+        }
+
+        // دالة عرض وتنسيق النتيجة وإطلاق حركة الدخول الفخمة
+        function showResult(resultBox, loader, message, classes, animate) {
+            loader.classList.add('hidden'); // إخفاء لودر التحميل
+            resultBox.className = `w-full p-4 rounded-xl text-sm font-bold ${classes}`; // تطبيق التنسيق اللوني للنتيجة
+            resultBox.innerText = message; // تعديل محتوى النص
+            resultBox.classList.remove('hidden'); // إظهار المربع للمستخدم
+            
+            if (animate) {
+                resultBox.classList.add('result-animate'); // بدء حركة الـ FadeIn/Slide من الأسفل للأعلى
+            }
+        }
+
+        // دالة نسخ النص من حقل الإدخال
+        function copyCode() {
+            const inputVal = document.getElementById('serialInput').value;
+            if (inputVal) {
+                navigator.clipboard.writeText(inputVal);
+                alert("تم نسخ الكود: " + inputVal);
+            }
+        }
+
+        // دالة فتح وإغلاق حاوية الـ QR الكاميرا التفاعلية
+        function toggleScanner() {
+            const container = document.getElementById('scannerContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                startScanner();
+            } else {
+                stopScanner();
+            }
+        }
+
+        // تشغيل كاميرا قراءة الـ QR
+        function startScanner() {
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (qrCodeMessage) => {
+                    document.getElementById('serialInput').value = qrCodeMessage;
+                    checkProduct(); // فحص تلقائي فور التقاط الكود بنجاح مع تفعيل الأنيميشن
+                },
+                (errorMessage) => { }
+            ).catch(err => {
+                alert("يرجى إعطاء صلاحية الكاميرا للمتصفح أولاً.");
+                stopScanner();
+            });
+        }
+
+        // إيقاف عمل الكاميرا
+        function stopScanner() {
+            const container = document.getElementById('scannerContainer');
+            container.classList.add('hidden');
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => { html5QrcodeScanner = null; }).catch(err => {});
+            }
+        }
+    </script>
+</body>
+</html>
