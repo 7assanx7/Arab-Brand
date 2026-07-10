@@ -1,242 +1,452 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التحقق من المنتج </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arab Computers | Home</title>
+    <!-- استدعاء Tailwind CSS للتنسيق العصري والمطابق -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خط Cairo لتناسق النصوص العربية والإنجليزية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة قراءة ملفات الإكسيل الشهيرة والآمنة -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #0d0d0d; }
-        .gold-gradient {
-            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
-        }
-        .gold-text {
-            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 50%, #aa771c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        body { font-family: 'Cairo', sans-serif; background-color: #ffffff; color: #111111; margin: 0; padding: 0; overflow-x: hidden; }
+        .top-header { padding: 18px 0; background-color: #ffffff; width: 100%; border-bottom: 1px solid #f3f4f6; position: sticky; top: 0; z-index: 40; }
+        .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .brand-logo { height: 45px; object-fit: contain; }
+        .divider { width: 1px; height: 35px; background-color: #dca134; }
+        .apple-box { display: flex; align-items: center; gap: 10px; }
+        .apple-logo { height: 24px; object-fit: contain; }
+        .apple-text { font-family: -apple-system, sans-serif; font-size: 12px; line-height: 1.2; font-weight: 700; color: #000000; text-align: left; }
+        
+        /* اللون الذهبي الفاخر للبراند */
+        .gold-brand-bg { background-color: #ba943a; }
+        .gold-brand-bg:hover { background-color: #a4812f; }
+        .gold-text { color: #ba943a; }
 
-        /* أنيميشن الدخول الناعم للنتيجة */
-        @keyframes resultFadeIn {
-            0% { opacity: 0; transform: translateY(12px); }
+        /* لودر الفحص الدائري */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #ba943a; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* أنيميشن ناعم للتبديل بين الصفحات */
+        .page-view { transition: opacity 0.4s ease, transform 0.4s ease; }
+        .page-hidden { display: none !important; opacity: 0; transform: translateY(10px); }
+        
+        @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(15px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        .result-animate {
-            animation: resultFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        .animate-slide-in {
+            animation: slideInUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        /* مؤشر التحميل الذهبي الفخم */
-        .loader {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #bf953f;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            animation: spin 0.8s linear infinite;
+        /* تأثيرات الفخامة البيضاء */
+        .premium-card {
+            background: #ffffff;
+            border: 1px solid #f3f4f6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .premium-card:hover {
+            border-color: #ba943a;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(186, 148, 58, 0.04);
         }
     </style>
 </head>
-<body class="text-gray-200 min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col bg-white">
 
-    <header class="py-6 text-center border-b border-gray-800">
-        <h1 class="text-2xl font-bold tracking-widest gold-text">Arab Computers BRAND</h1>
-    </header>
-
-    <main class="max-w-4xl mx-auto my-10 px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        
-        <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800 backdrop-blur-sm">
-            <h2 class="text-xl font-bold mb-4 gold-text">خطوات التحقق من المنتج</h2>
-            <ul class="space-y-4 text-sm text-gray-400">
-                <li class="flex items-start gap-3">
-                    <span class="flex items-center justify-center bg-amber-500/10 text-amber-500 rounded-full h-6 w-6 shrink-0 border border-amber-500/30">1</span>
-                    <span>قم **بقشط الطبقة الفضية** الموجودة على علبة المنتج لتكشف عن الكود.</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="flex items-center justify-center bg-amber-500/10 text-amber-500 rounded-full h-6 w-6 shrink-0 border border-amber-500/30">2</span>
-                    <span>يمكنك **مسح الـ QR** بالكاميرا مباشرة أو كتابة الكود يدوياً.</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="flex items-center justify-center bg-amber-500/10 text-amber-500 rounded-full h-6 w-6 shrink-0 border border-amber-500/30">3</span>
-                    <span>اضغط على **"فحص المنتج"** وسيتم تأكيد الأصالة خلال لحظات.</span>
-                </li>
-            </ul>
-        </div>
-
-        <div class="bg-zinc-900 p-8 rounded-2xl border border-amber-500/20 shadow-2xl shadow-amber-500/5 text-center">
-            <h2 class="text-2xl font-bold mb-2">Product Authenticity Verification</h2>
-            <p class="text-gray-400 text-xs mb-6">امسح كود QR أو أدخل السيريال نمبر يدوياً</p>
+    <!-- الهيدر الرئيسي مع القائمة والملاحة -->
+    <header class="top-header backdrop-blur-md bg-white/95">
+        <div class="max-w-5xl mx-auto px-6 w-full flex items-center justify-between">
             
-            <div class="space-y-4">
-                <div class="relative flex items-center bg-zinc-950 border border-gray-700 rounded-xl focus-within:border-amber-500 transition-all overflow-hidden px-3">
-                    <button onclick="copyCode()" title="نسخ الكود" class="p-2 text-gray-400 hover:text-amber-400 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                    </button>
-                    <input type="text" id="serialInput" placeholder="أدخل الكود أو امسح الـ QR..." 
-                        class="w-full bg-transparent py-3 text-center text-base uppercase tracking-widest text-white focus:outline-none">
-                    <button onclick="toggleScanner()" title="مسح QR Code" class="p-2 text-gray-400 hover:text-amber-400 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 17h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                        </svg>
-                    </button>
-                </div>
+            <!-- اللوجو والهوية البرمجية -->
+            <div class="brand-row">
+                <a href="#" onclick="switchPage('home')" class="flex items-center gap-4">
+                    <img src="Logo.png" class="brand-logo" alt="Arab Computers" />
+                    <div class="divider"></div>
+                    <div class="apple-box">
+                        <img src="apple.png" class="apple-logo" alt="Apple">
+                        <span class="apple-text">Authorised<br>Distributor</span>
+                    </div>
+                </a>
+            </div>
 
-                <div id="scannerContainer" class="hidden border border-zinc-800 rounded-xl overflow-hidden bg-black p-2">
-                    <div id="reader" class="w-full"></div>
-                </div>
-                
-                <button onclick="checkProduct()" 
-                    class="w-full gold-gradient text-black font-bold py-3 rounded-xl hover:opacity-90 transition-all shadow-lg shadow-amber-500/20 text-lg tracking-wide">
-                    فـحـص الـمـنـتـج الآن
+            <!-- قائمة التنقل (قوائم واضحة وفخمة) -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+                <button onclick="switchPage('home')" id="nav-home" class="gold-text border-b-2 border(#ba943a) pb-1 font-bold transition-all">Home</button>
+                <button onclick="switchPage('check')" id="nav-check" class="text-gray-500 hover:text-black pb-1 transition-all">Check Sticker</button>
+                <a href="https://arabcomputers.com.sa/" target="_blank" class="text-gray-500 hover:text-black pb-1 transition-all">Official Website</a>
+            </nav>
+
+            <!-- زر الاختصار السريع المتناسق -->
+            <div class="flex items-center gap-4">
+                <button onclick="switchPage('check')" class="hidden sm:inline-block text-xs font-bold uppercase tracking-wider border border-gray-200 px-5 py-2.5 rounded-full hover:border-black transition-all">
+                    Verify Product
                 </button>
             </div>
+        </div>
+    </header>
 
-            <div id="resultArea" class="mt-6 min-h-[60px] flex items-center justify-center">
-                <div id="checkingLoader" class="hidden flex flex-col items-center gap-2">
-                    <div class="loader"></div>
-                    <span class="text-xs text-gray-500 gold-text">جاري التحقق من قاعدة البيانات...</span>
+
+    <!-- ========================================== -->
+    <!--  1. صفحة الـ HOME الواجهة البيضاء الفخمة     -->
+    <!-- ========================================== -->
+    <div id="page-home" class="page-view flex-grow flex flex-col justify-center">
+        <!-- Hero Section -->
+        <section class="max-w-5xl mx-auto px-6 pt-16 pb-20 text-center w-full">
+            <span class="text-xs font-bold uppercase tracking-[0.3em] gold-text mb-4 inline-block animate-pulse">Welcome to Arab Computers</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight leading-[1.15] mb-6">
+                Authenticity & <br><span class="font-light text-gray-400">Premium Protection</span>
+            </h1>
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                We ensure that your premium hardware experiences are secure, fully backed by the authorized original manufacturer warranties across the Kingdom.
+            </p>
+            
+            <!-- أزرار الإجراء الفاخرة للوصول إلى الفحص -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="switchPage('check')" class="gold-brand-bg text-white font-bold text-sm tracking-wider px-10 py-4 rounded-full shadow-lg shadow-amber-900/10 hover:opacity-95 transition-all w-full sm:w-auto">
+                    Check Sticker Verification
+                </button>
+                <a href="https://arabcomputers.com.sa/" target="_blank" class="bg-gray-50 text-gray-900 border border-gray-200 font-bold text-sm tracking-wider px-10 py-4 rounded-full hover:bg-gray-100 transition-all w-full sm:w-auto">
+                    Explore Services
+                </a>
+            </div>
+        </section>
+
+        <!-- شبكة الخدمات الفخمة (الأبيض والمساحات البسيطة) -->
+        <section class="bg-gray-50/50 py-16 border-t border-b border-gray-100 w-full">
+            <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div onclick="switchPage('check')" class="premium-card p-8 rounded-2xl cursor-pointer">
+                    <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center gold-text mb-5 font-bold">01</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Instant Validation</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Scan your QR code or input the serial digits to authenticate your original warranty sticker immediately.</p>
                 </div>
-                <div id="resultBox" class="w-full p-4 rounded-xl hidden text-sm font-bold"></div>
+
+                <div class="premium-card p-8 rounded-2xl">
+                    <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center gold-text mb-5 font-bold">02</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Authorized Protection</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">As an Authorized Distributor, your protection is tied to certified validation records directly from the supplier database.</p>
+                </div>
+
+                <div class="premium-card p-8 rounded-2xl">
+                    <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center gold-text mb-5 font-bold">03</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Anti-Counterfeit</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Advanced safety alignment protocols developed to combat and detect forged duplicates or lookalike validation URLs.</p>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!--  2. صفحة الـ CHECK STICKER (صفحة الفحص)   -->
+    <!-- ========================================== -->
+    <div id="page-check" class="page-view flex-grow page-hidden">
+        
+        <!-- شريط المسار الداخلي للصفحة -->
+        <div class="w-full py-4 border-b border-gray-100 bg-gray-50/30">
+            <div class="max-w-4xl mx-auto px-6 flex items-center gap-2 text-xs text-gray-400 justify-start">
+                <button onclick="switchPage('home')" class="hover:text-black">Home</button>
+                <span>›</span>
+                <strong class="text-gray-900 font-bold">Check sticker</strong>
             </div>
         </div>
 
-    </main>
+        <main class="max-w-4xl mx-auto my-12 px-6 w-full text-center">
+            
+            <!-- العناوين والنصوص -->
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5 leading-tight tracking-tight">Warranty sticker<br>validation</h1>
+                <p class="text-base text-gray-500 mb-2">Check if the warranty sticker on your product is genuine.</p>
+                <p class="text-base text-gray-500 font-medium">تأكد إذا كان ملصق الضمان الموجود على منتجك هو ملصق أصلي أو مزيف</p>
+            </div>
 
-    <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-900">
-        &copy; 2026 جميع الحقوق محفوظة .
+            <!-- الصور المصغرة والممركزة -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto mb-12">
+                <div class="bg-gray-50/60 p-4 rounded-xl border border-gray-100">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">الشكل القديم</h2>
+                    <img src="old-sticker.png" class="mx-auto max-h-48 object-contain rounded-lg shadow-sm" alt="Old sticker" />
+                </div>
+                <div class="bg-gray-50/60 p-4 rounded-xl border border-gray-100">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">الشكل الجديد</h2>
+                    <img src="new-sticker.png" class="mx-auto max-h-48 object-contain rounded-lg shadow-sm" alt="New sticker" />
+                </div>
+            </div>
+
+            <!-- النصوص الإرشادية لعملية الإدخال -->
+            <div class="mb-6 text-center">
+                <p class="text-base font-bold text-gray-800">Enter the number shown on the sticker in this box:</p>
+                <p class="text-sm text-gray-400 mt-1">أدخل الرقم الموجود على الملصق هنا</p>
+            </div>
+
+            <!-- منطقة الفحص: كبسولة دائرية الأطراف مستوحاة من الصورة بالكامل -->
+            <section class="max-w-xl mx-auto mb-8">
+                <div class="flex items-center w-full bg-white border border-gray-200 shadow-sm rounded-full overflow-hidden p-0 h-[54px] focus-within:border-gray-400 transition-all">
+                    
+                    <!-- حقل إدخال النص -->
+                    <input id="codeInput" type="text" placeholder="XXXXXX" autocomplete="off" 
+                        class="flex-grow bg-transparent h-full px-6 text-left text-lg uppercase tracking-wider text-black font-bold placeholder:text-gray-300 placeholder:font-normal focus:outline-none">
+                    
+                    <!-- زر الـ QR المربع الذهبي المتناسق -->
+                    <button id="qrBtn" type="button" class="gold-brand-bg h-full w-14 flex items-center justify-center border-l-2 border-white text-white hover:opacity-90 transition-opacity" title="Scan via Live Camera">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zM17 5h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 17h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                    </button>
+                    
+                    <!-- زر الـ Check الكبسولة الطرفية مكملة الشكل الهندسي من الصورة -->
+                    <button id="checkBtn" type="button" class="gold-brand-bg h-full px-8 text-white font-bold transition-all text-base border-l-2 border-white hover:opacity-95">
+                        Check
+                    </button>
+                </div>
+
+                <!-- لوحة النتيجة والأنيميشن المتجدد حركياً عند كل ضغطة -->
+                <div id="resultArea" class="mt-6 min-h-[60px] flex items-center justify-center max-w-xl mx-auto">
+                    <div id="checkingLoader" class="hidden flex items-center gap-2.5">
+                        <div class="loader"></div>
+                        <span class="text-xs text-gray-400 font-medium">جاري فحص حالة الضمان...</span>
+                    </div>
+                    <div id="result" class="w-full p-4 rounded-xl hidden text-sm font-bold border"></div>
+                </div>
+            </section>
+
+            <!-- الرسالة التحذيرية الأمنية باللون الأحمر وممركزة بالمنتصف تماماً تحت نتيجة الضمان -->
+            <section class="max-w-2xl mx-auto mt-10 pt-8 border-t border-gray-100 text-center space-y-8">
+                <!-- النص العربي الملون والمطابق للصورة -->
+                <div class="text-[#e60000] font-semibold text-base leading-relaxed space-y-3">
+                    <p>نحذر عملائنا الكرام من وجود ملصق ضمان مزور يحتوي على رمز استجابة سريع يوجه المستخدمين لصفحة إلكترونية مزورة تشبه هذه الصفحة.</p>
+                    <p class="font-bold text-lg pt-1">يجب أن يكون عنوان الصفحة تابع لعنوان موقعنا الرسمي:</p>
+                    <p class="text-black font-bold text-xl tracking-wide font-sans pt-1">/arabcomputers.com.sa</p>
+                </div>
+
+                <!-- النص الإنجليزي الملون والمطابق للصورة -->
+                <div class="text-[#e60000] font-sans leading-relaxed space-y-3">
+                    <p class="font-extrabold text-xl">Important Notice to Our Valued Customers:</p>
+                    <p class="text-base font-semibold max-w-xl mx-auto">We would like to alert you to the presence of counterfeit warranty stickers featuring a QR code that directs users to a fraudulent website designed to imitate the official Arab Computers website.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+
+    <!-- نافذة المودال لـ QR Code (الكاميرا الحية) -->
+    <div id="qrModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white max-w-md w-full rounded-xl p-6 relative shadow-2xl">
+            <button id="closeQr" type="button" class="absolute top-4 right-4 text-gray-400 hover:text-black text-2xl">&times;</button>
+            <h3 class="text-lg font-bold mb-1 text-left">Scan QR Code</h3>
+            <p class="text-xs text-gray-400 mb-4 text-left">امسح الكود عبر الكاميرا الحية مباشرة</p>
+            
+            <div id="qr-reader" class="w-full rounded-lg overflow-hidden bg-gray-50 border border-gray-200 mb-4 min-h-[250px]"></div>
+            
+            <div class="text-center">
+                <label class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold py-2.5 px-5 rounded-lg text-center cursor-pointer border border-gray-300 transition-all">
+                    Or upload QR image بدلاً من الكاميرا
+                    <input id="qrFile" type="file" accept="image/*" hidden />
+                </label>
+            </div>
+            <p id="qrStatus" class="text-center text-xs mt-3 text-amber-600 font-medium"></p>
+        </div>
+    </div>
+
+
+    <!-- الفوتر الثابت والموحد -->
+    <footer class="py-6 text-center text-[11px] text-gray-400 border-t border-gray-200 bg-gray-50 mt-auto">
+        &copy; 2026 جميع الحقوق محفوظة لشركة حاسبات العرب.
     </footer>
 
-    <script>
-        let validSerials = [];
-        let html5QrcodeScanner = null;
 
-        // دالة جلب وقراءة ملف السيريلات من الإكسيل التابع للموقع
-        async function loadExcelData() {
+    <!-- السكربتات والأنظمة المدمجة -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script type="text/javascript">
+        
+        // ==========================================
+        //  نظام التحكم والملاحة بين الصفحات الفاخرة
+        // ==========================================
+        function switchPage(pageId) {
+            // أرشفة وإخفاء النوافذ
+            document.getElementById('page-home').classList.add('page-hidden');
+            document.getElementById('page-check').classList.add('page-hidden');
+            
+            // إزالة التحديد الفاخر من الأزرار
+            document.getElementById('nav-home').classList.remove('gold-text', 'border-b-2', 'border-[#ba943a]', 'font-bold');
+            document.getElementById('nav-home').classList.add('text-gray-500');
+            document.getElementById('nav-check').classList.remove('gold-text', 'border-b-2', 'border-[#ba943a]', 'font-bold');
+            document.getElementById('nav-check').classList.add('text-gray-500');
+
+            // تفعيل الصفحة المختارة برفق وأنيميشن واعي
+            const activePage = document.getElementById('page-' + pageId);
+            activePage.classList.remove('page-hidden');
+            
+            // إضافة التنسيق المحدد للزر المختار
+            const activeNav = document.getElementById('nav-' + pageId);
+            activeNav.classList.add('gold-text', 'border-b-2', 'border-[#ba943a]', 'font-bold');
+            activeNav.classList.remove('text-gray-500');
+
+            // إيقاف الكاميرا برمجياً لحفظ الموارد في حال الخروج المفاجئ لصفحة الـ Home
+            if(pageId === 'home') {
+                stopCameraAndClose();
+            }
+            
+            // الصعود التلقائي لقمة الشاشة لتقديم تجربة تصفح مثالية
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+
+        // ==========================================
+        //  منطق جلب وقراءة قاعدة الإكسيل والتحقق
+        // ==========================================
+        let validSerialNumbers = [];
+
+        async function loadProductsExcel() {
             try {
                 const response = await fetch('products.xlsx');
+                if (!response.ok) throw new Error('لم يتم العثور على ملف الإكسيل products.xlsx');
+                
                 const arrayBuffer = await response.arrayBuffer();
                 const data = new Uint8Array(arrayBuffer);
                 const workbook = XLSX.read(data, { type: 'array' });
+                
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                validSerials = jsonData.map(row => String(row.Serial || row.serial || Object.values(row)[0]).trim().toUpperCase());
-                console.log("تم تحميل الأكواد بنجاح ومستعدة للفحص.");
+                
+                const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                validSerialNumbers = rows.flat()
+                    .filter(cell => cell !== null && cell !== undefined)
+                    .map(cell => String(cell).trim().toUpperCase());
+                
+                console.log("تم تحميل قاعدة المنتجات من الإكسيل، إجمالي العناصر:", validSerialNumbers.length);
             } catch (error) {
-                console.error("خطأ أثناء محاولة قراءة ملف الإكسيل:", error);
+                console.error("خطأ أثناء قراءة ملف الإكسيل:", error);
             }
         }
-        window.onload = loadExcelData;
 
-        // ** دالة الفحص الأساسية المحسنة بالكامل لحل مشكلة ثبات الأنيميشن **
-        function checkProduct() {
-            const inputVal = document.getElementById('serialInput').value.trim().toUpperCase();
-            const resultBox = document.getElementById('resultBox');
-            const loader = document.getElementById('checkingLoader');
+        window.addEventListener('DOMContentLoaded', loadProductsExcel);
+
+        const checkBtn = document.getElementById('checkBtn');
+        const codeInput = document.getElementById('codeInput');
+        const resultDiv = document.getElementById('result');
+        const loaderDiv = document.getElementById('checkingLoader');
+
+        function performValidation() {
+            const enteredCode = codeInput.value.trim().toUpperCase();
+
+            resultDiv.classList.add('hidden');
+            resultDiv.classList.remove('animate-slide-in', 'bg-green-50', 'text-green-700', 'border-green-200', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-amber-50', 'text-amber-700', 'border-amber-200');
             
-            // 1. إغلاق الـ Scanner فوراً في حال كان مفتوحاً لراحة المستخدم
-            stopScanner();
-
-            // 2. التحقق من الحقل الفارغ
-            if (!inputVal) {
-                showResult(resultBox, loader, "يرجى إدخال الكود أو قراءة الـ QR أولاً!", "bg-red-500/10 border border-red-500 text-red-400", false);
+            if (!enteredCode) {
+                resultDiv.innerHTML = "❌ الرجاء إدخال رقم الملصق أولاً / Please enter the code";
+                resultDiv.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+                resultDiv.classList.remove('hidden');
+                resultDiv.classList.add('animate-slide-in');
                 return;
             }
 
-            // 3. كسر ثبات وحالة الأنيميشن القديم لضمان تفعيله مجدداً في كل ضغطة (Reset Animation)
-            resultBox.classList.add('hidden');
-            resultBox.classList.remove('result-animate');
-            resultBox.style.animation = 'none'; 
-            resultBox.offsetHeight; /* خطوة الـ Reflow السحرية لإجبار المتصفح على بدء الحركة مجدداً */
-            resultBox.style.animation = null; 
+            loaderDiv.classList.remove('hidden');
 
-            // إظهار مؤشر الفحص الفخم
-            loader.classList.remove('hidden');
-
-            // 4. تأخير زمني مستهدف (800ms) لإعطاء انطباع بالفحص الحقيقي والراقي
             setTimeout(() => {
-                let message, classes;
+                loaderDiv.classList.add('hidden');
+                const isGenuine = validSerialNumbers.includes(enteredCode);
 
-                if (validSerials.includes(inputVal)) {
-                    message = "✓ منتج أصلي ومضمون 100%. شكراً لثقتكم بمنتجاتنا الفاخرة.";
-                    classes = "bg-emerald-500/10 border border-emerald-500 text-emerald-400";
+                if (isGenuine) {
+                    resultDiv.innerHTML = `
+                        <div class="text-center space-y-1">
+                            <p class="text-base font-bold">✅ ملصق الضمان أصلي ومعتمد</p>
+                            <p class="text-xs font-sans opacity-90">This warranty sticker is genuine and valid.</p>
+                        </div>
+                    `;
+                    resultDiv.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
                 } else {
-                    message = "✕ تحذير! هذا الكود غير مسجل لدينا. قد يكون المنتج مقلداً.";
-                    classes = "bg-red-500/10 border border-red-500 text-red-400";
+                    resultDiv.innerHTML = `
+                        <div class="text-center space-y-1">
+                            <p class="text-base font-bold">❌ هذا الرقم غير مسجل أو ملصق مزيف</p>
+                            <p class="text-xs font-sans opacity-90">Invalid number. This sticker may be counterfeit.</p>
+                        </div>
+                    `;
+                    resultDiv.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
                 }
 
-                // 5. إرسال البيانات المحدثة وعرضها بالأنيميشن الجديد المتجدد
-                showResult(resultBox, loader, message, classes, true);
-
-            }, 800); 
+                resultDiv.classList.remove('hidden');
+                resultDiv.classList.add('animate-slide-in');
+            }, 400);
         }
 
-        // دالة عرض وتنسيق النتيجة وإطلاق حركة الدخول الفخمة
-        function showResult(resultBox, loader, message, classes, animate) {
-            loader.classList.add('hidden'); // إخفاء لودر التحميل
-            resultBox.className = `w-full p-4 rounded-xl text-sm font-bold ${classes}`; // تطبيق التنسيق اللوني للنتيجة
-            resultBox.innerText = message; // تعديل محتوى النص
-            resultBox.classList.remove('hidden'); // إظهار المربع للمستخدم
+        checkBtn.addEventListener('click', performValidation);
+        codeInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') performValidation(); });
+
+
+        // ==========================================
+        //  منطق فتح الكاميرا وقراءة الـ QR والرفع
+        // ==========================================
+        const qrBtn = document.getElementById('qrBtn');
+        const qrModal = document.getElementById('qrModal');
+        const closeQr = document.getElementById('closeQr');
+        const qrStatus = document.getElementById('qrStatus');
+        const qrFile = document.getElementById('qrFile');
+
+        let html5QrcodeScanner = null;
+
+        qrBtn.addEventListener('click', () => {
+            qrModal.classList.remove('hidden');
+            qrStatus.innerText = "جاري فتح الكاميرا الحية...";
             
-            if (animate) {
-                resultBox.classList.add('result-animate'); // بدء حركة الـ FadeIn/Slide من الأسفل للأعلى
-            }
-        }
-
-        // دالة نسخ النص من حقل الإدخال
-        function copyCode() {
-            const inputVal = document.getElementById('serialInput').value;
-            if (inputVal) {
-                navigator.clipboard.writeText(inputVal);
-                alert("تم نسخ الكود: " + inputVal);
-            }
-        }
-
-        // دالة فتح وإغلاق حاوية الـ QR الكاميرا التفاعلية
-        function toggleScanner() {
-            const container = document.getElementById('scannerContainer');
-            if (container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-                startScanner();
-            } else {
-                stopScanner();
-            }
-        }
-
-        // تشغيل كاميرا قراءة الـ QR
-        function startScanner() {
-            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            
             html5QrcodeScanner.start(
                 { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                (qrCodeMessage) => {
-                    document.getElementById('serialInput').value = qrCodeMessage;
-                    checkProduct(); // فحص تلقائي فور التقاط الكود بنجاح مع تفعيل الأنيميشن
+                {
+                    fps: 10,
+                    qrbox: { width: 200, height: 200 }
                 },
-                (errorMessage) => { }
+                (qrCodeText) => {
+                    codeInput.value = qrCodeText;
+                    stopCameraAndClose();
+                    performValidation();
+                },
+                (errorMessage) => {
+                    qrStatus.innerText = "وجّه الكاميرا باتجاه مربع الـ QR Code على المنتج";
+                }
             ).catch(err => {
-                alert("يرجى إعطاء صلاحية الكاميرا للمتصفح أولاً.");
-                stopScanner();
+                console.error("فشل الوصول للكاميرا:", err);
+                qrStatus.innerText = "فشل تشغيل الكاميرا، تأكد من إعطاء الصلاحية أو ارفع صورة الكود بالأسفل";
             });
-        }
+        });
 
-        // إيقاف عمل الكاميرا
-        function stopScanner() {
-            const container = document.getElementById('scannerContainer');
-            container.classList.add('hidden');
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => { html5QrcodeScanner = null; }).catch(err => {});
+        function stopCameraAndClose() {
+            if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
+                html5QrcodeScanner.stop().then(() => {
+                    qrModal.classList.add('hidden');
+                }).catch(err => {
+                    qrModal.classList.add('hidden');
+                });
+            } else {
+                qrModal.classList.add('hidden');
             }
         }
+
+        closeQr.addEventListener('click', stopCameraAndClose);
+
+        qrFile.addEventListener('change', e => {
+            if (e.target.files.length === 0) return;
+            const file = e.target.files[0];
+            qrStatus.innerText = "جاري تحليل الصورة المرفوعة...";
+            
+            const html5QrCode = new Html5Qrcode("qr-reader");
+            html5QrCode.scanFile(file, true)
+                .then(qrCodeText => {
+                    codeInput.value = qrCodeText;
+                    stopCameraAndClose();
+                    performValidation();
+                })
+                .catch(err => {
+                    qrStatus.innerText = "❌ لم نتمكن من العثور على كود QR صالح في هذه الصورة";
+                });
+        });
     </script>
 </body>
 </html>
